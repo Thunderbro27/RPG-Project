@@ -43,14 +43,14 @@ public:
         max_hp = 100;
         gold = 0;
     };
-    bool Getinventory(int i){return invintory[i];};
+    bool Getinventory(int i){return inventory[i];};
     int Getlvl(){return lvl;};
     int Getgold(){return gold;}
     int Getexp(){return xp;};
     int GetHpcap(){return max_hp;};
     std::string Getname(){return name;};
     void setInventory(bool id){
-        invintory[id] = true;
+        inventory[id] = true;
     }
     void setGold(int gold){this->gold += gold;}
     void setLvl(int lvl){this->lvl +=lvl;};
@@ -155,19 +155,19 @@ int main(){
         case '4':
              
             int temp_gold;
-            temp_gold = ppf->Getgold();
+            temp_gold = player_ptr->Getgold();
             char shop_choice;
             s1.enterShop(); //Calls the shop. See shop.h for more detials
             std::cin>> shop_choice;
             switch(s1.store(shop_choice,temp_gold))
             {
                 case 1:
-                    player_ptr->setInvintory(0);
+                    player_ptr->setInventory(0);
                     player_ptr->setGold(-10);
                 break;
 
                 case 2:
-                    player_ptr->setInvintory(1);
+                    player_ptr->setInventory(1);
                     player_ptr->setGold(-10);
                 break;
 
@@ -463,7 +463,7 @@ void attack(int*& hp, char player_action,int enemy_name){
     accuracy = rand() % 9 + 1;
     damage = rand() % 19 + 1;
             
-    if(player_ptr->Getinvintory(0)== true){
+    if(player_ptr->Getinventory(0)== true){
             damage+= 10;
         }
         drained_hp = &damage;
@@ -484,7 +484,7 @@ void attack(int*& hp, char player_action,int enemy_name){
 
     accuracy = rand() % 9 + 1;
     damage = rand() % 40 + 10;
-         if(player_ptr->Getinvintory(0)== true){
+         if(player_ptr->Getinventory(0)== true){
             damage+= 10;
         }
         drained_hp = &damage;
@@ -568,7 +568,7 @@ if(*enemy_hp > 0){
         *enemy_hp = *enemy_hp - burn_damage;
         turn_timer--;
     }
-    if(player_ptr->Getinvintory(1)== true){
+    if(player_ptr->Getinventory(1)== true){
             damage-= 10;
         }  
         if(accuracy > 3){
@@ -604,7 +604,7 @@ if(*enemy_hp > 0){
         *enemy_hp = *enemy_hp - burn_damage;
         turn_timer--;
     }
-    if(player_ptr->Getinvintory(1)== true){
+    if(player_ptr->Getinventory(1)== true){
             damage-= 10;
         }  
         if(accuracy > 3){
@@ -653,7 +653,7 @@ if(*enemy_hp > 0){
         *enemy_hp = *enemy_hp - burn_damage;
         turn_timer--;
     }
-        if(player_ptr->Getinvintory(1)== true){
+        if(player_ptr->Getinventory(1)== true){
             damage-= 10;
         }  
         if(accuracy > 3){
