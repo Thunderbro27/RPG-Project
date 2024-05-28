@@ -34,6 +34,7 @@ class Player{
     int xp;
     int max_hp; // Max hp of the player and caps over healing
     std::string name;
+    bool inventory[2];
 public:
     Player(){
         lvl = 1;
@@ -42,12 +43,15 @@ public:
         max_hp = 100;
         gold = 0;
     };
-
+    bool Getinventory(int i){return invintory[i];};
     int Getlvl(){return lvl;};
     int Getgold(){return gold;}
     int Getexp(){return xp;};
     int GetHpcap(){return max_hp;};
     std::string Getname(){return name;};
+    void setInventory(bool id){
+        invintory[id] = true;
+    }
     void setGold(int gold){this->gold += gold;}
     void setLvl(int lvl){this->lvl +=lvl;};
     void setHpcap(int max_hp){this->max_hp +=max_hp;}
@@ -62,8 +66,28 @@ public:
         std::cout << "EXP: " << xp << "/"<< xp_cap <<std::endl;
         std::cout << "Gold: "<< gold;
         sep();
-        std::cout << "Press any key and enter to continue: ";
+        std::cout << "Press any key and enter to continue or enter i for inventory: ";
         std::cin >> menu_stopper; // Paues the menu so the player can read it
+        if(menu_stopper == 'i'){
+            sep();
+            std::cout << "Items in inventory: "<< std::endl;
+                if(this->inventory[0]== false){
+                    std::cout << "Hand: No Weapon"<< std::endl;
+                }
+                else{
+                    std::cout <<"Hand: Sword"<< std::endl;
+                }
+                if(this->inventory[1]== false){
+                    std::cout << "Body: No Armor"<<std::endl;
+                }
+                else{
+                    std::cout<< "Body Armor"<<std::endl;
+                }
+        
+        std::cout<<"Press any key and enter to continue: ";
+        sep();
+        std::cin>> menu_stopper;
+        }
     }
 };
 
@@ -130,11 +154,27 @@ int main(){
             break;
         case '4':
              
+            int temp_gold;
+            temp_gold = ppf->Getgold();
             char shop_choice;
             s1.enterShop(); //Calls the shop. See shop.h for more detials
             std::cin>> shop_choice;
-            s1.Choice(shop_choice);
-            break;
+            switch(s1.store(shop_choice,temp_gold))
+            {
+                case 1:
+                    player_ptr->setInvintory(0);
+                    player_ptr->setGold(-10);
+                break;
+
+                case 2:
+                    player_ptr->setInvintory(1);
+                    player_ptr->setGold(-10);
+                break;
+
+                default:
+                break;
+            }
+
         case '5':
                 exit_menu++;
             break;
@@ -422,6 +462,10 @@ void attack(int*& hp, char player_action,int enemy_name){
 
     accuracy = rand() % 9 + 1;
     damage = rand() % 19 + 1;
+            
+    if(player_ptr->Getinvintory(0)== true){
+            damage+= 10;
+        }
         drained_hp = &damage;
         if(accuracy > 3){
         std::cout << "You hit the" << type << "for: " << damage << " damage.";
@@ -440,6 +484,9 @@ void attack(int*& hp, char player_action,int enemy_name){
 
     accuracy = rand() % 9 + 1;
     damage = rand() % 40 + 10;
+         if(player_ptr->Getinvintory(0)== true){
+            damage+= 10;
+        }
         drained_hp = &damage;
         if(accuracy > 6){
         std::cout << "You hit the"<< type << "for: " << damage << " damage.";
@@ -521,6 +568,9 @@ if(*enemy_hp > 0){
         *enemy_hp = *enemy_hp - burn_damage;
         turn_timer--;
     }
+    if(player_ptr->Getinvintory(1)== true){
+            damage-= 10;
+        }  
         if(accuracy > 3){
         std::cout << "The slime hit you for: " << damage << " damage.";
          *hp = *hp -damage;
@@ -554,6 +604,9 @@ if(*enemy_hp > 0){
         *enemy_hp = *enemy_hp - burn_damage;
         turn_timer--;
     }
+    if(player_ptr->Getinvintory(1)== true){
+            damage-= 10;
+        }  
         if(accuracy > 3){
         std::cout << "The Fox hit you for: " << damage << " damage.";
          *hp = *hp -damage;
@@ -600,6 +653,9 @@ if(*enemy_hp > 0){
         *enemy_hp = *enemy_hp - burn_damage;
         turn_timer--;
     }
+        if(player_ptr->Getinvintory(1)== true){
+            damage-= 10;
+        }  
         if(accuracy > 3){
         std::cout << "The King Slime hit you for: " << damage << " damage.";
          *hp = *hp -damage;
