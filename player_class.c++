@@ -15,7 +15,8 @@ int xp_cap = 100; //The Default amount of xp needed to level up
     int* drained_hp; //Drained hp used to add the amount the player heals durring the King slime boss fight
 int enemy_type =0; //Used when deciding enemy type (slime, fox, king slime) 
 int turn_timer=0; //Counts down the amount of turns the enemy is burned
-int burn_timer =0;  // Counts down the smount of turns the player is bleeding
+int bleed_timer=0;// Counts down the smount of turns the player is bleeding
+
 
 Shop s1; //Starts the shop 
 
@@ -34,7 +35,7 @@ class Player{
     int xp;
     int max_hp; // Max hp of the player and caps over healing
     std::string name;
-    bool inventory[2];
+    bool inventory[2];// The inventory uses type bool to deturmine if the player has an iten or not.
 public:
     Player(){
         lvl = 1;
@@ -129,7 +130,7 @@ int main(){
         std::cout << "1 = Battle" <<std::endl;
         std::cout << "2 = Rest(used to heal)" <<std::endl;
         std::cout << "3 = Show stats" <<std::endl;
-        std::cout << "4 = Shop (Doesn'turn_timer work yet)" <<std::endl;
+        std::cout << "4 = Shop " <<std::endl;
         std::cout << "5 = Exit";
     sep();
 
@@ -138,7 +139,7 @@ int main(){
         switch (user_choice)
         {
         case '1':
-            *enemy_hp_ptr = 100;// Sets the emeny's hp to 100 if it wasn'turn_timer set alread
+            *enemy_hp_ptr = 100;// Sets the emeny's hp to 100 if it wasn't set alread
             battle(name);
            
             break;
@@ -174,6 +175,7 @@ int main(){
                 default:
                 break;
             }
+            break;
 
         case '5':
                 exit_menu++;
@@ -196,9 +198,9 @@ return 0;
 void battle(std::string name){
     
     char player_action; //Reads the players action
-    int c;
+    int bleed_chance;
     if(*player_hp_ptr!= player_ptr->GetHpcap()){ //Check if the player is at full hp
-        std::cout<< "You aren'turn_timer at full hp!"<<std::endl;
+        std::cout<< "You aren't at full hp!"<<std::endl;
     }
     else{
         sep();
@@ -225,7 +227,7 @@ void battle(std::string name){
            std::cout << std::endl;
         std::cout << name << ": " << player_hp << "/"<<player_ptr->GetHpcap() << std::endl;
             std::cout << "Enter i to show move details."<< std::endl;
-        std::cout << "What will you do?" << std::endl << "1 = Attack" << std::endl << "2 = Heavy Attack (low acc)";
+        std::cout << "What will you do?" << std::endl << "1 = Attack" << std::endl << "2 = Heavy Attack";
         
         if(player_ptr->Getlvl() >= 2){
             std::cout << std::endl << "3 = Execute";
@@ -290,6 +292,15 @@ void battle(std::string name){
     sep();
     std::cout << "A Fox appears: " << std::endl;
 
+    if(bleed_timer > 0){
+        int bleed_damage;
+        bleed_damage = rand() % 15 +3;
+        std::cout << "The slime took " << bleed_damage <<" damage from burn.";
+        sep();
+        *player_hp_ptr = *player_hp_ptr - bleed_damage;
+        bleed_timer--;
+    }
+
     while(*player_hp_ptr > 0 && *enemy_hp_ptr > 0){
        
         std::cout << "Fox: "<< enemy_hp << "/100"; 
@@ -298,8 +309,11 @@ void battle(std::string name){
         }
         else    
            std::cout << std::endl;
-        std::cout << name << ": " << player_hp << "/" <<player_ptr->GetHpcap()<< std::endl;
-            std::cout << "Enter i to show move details."<< std::endl;
+        std::cout << name << ": " << player_hp << "/" <<player_ptr->GetHpcap();
+            if(bleed_timer > 0){
+                std::cout<< "-Bleeding"<< std::endl;
+            }
+            std::cout<<std::endl << "Enter i to show move details."<< std::endl;
         std::cout << "What will you do?" << std::endl << "1 = Attack" << std::endl << "2 = Heavy Attack (low acc)";
         
         if(player_ptr->Getlvl() >= 2){
@@ -340,7 +354,7 @@ void battle(std::string name){
 
     }
     turn_timer =0;
-    burn_timer =0;
+    
       if(*player_hp_ptr <= 0){
        std::cout << "You died to the Fox!";
        *player_hp_ptr =0;
@@ -414,7 +428,8 @@ void battle(std::string name){
 
     }
     turn_timer =0;
-    burn_timer =0;
+   
+
       if(*player_hp_ptr <= 0){
         sep();
        std::cout << "You died to the King Slime!";
@@ -549,7 +564,7 @@ void attack(int*& hp, char player_action,int enemy_name){
 void enemy(int*& hp,int*& enemy_hp,int enemy_type){
     int accuracy;
     int damage;
-    int c;
+    int bleed_chance;
 
         if(enemy_type == 1){
         std::random_device rd;
@@ -593,7 +608,7 @@ if(*enemy_hp > 0){
 
 
 if(*enemy_hp > 0){
-    c = dist(gen)% 3 + 1;
+    bleed_chance = dist(gen)% 3 + 1;
     accuracy = dist(gen);
     damage = dist(gen)% 20 +6;
     if(turn_timer > 0){
@@ -611,7 +626,7 @@ if(*enemy_hp > 0){
         std::cout << "The Fox hit you for: " << damage << " damage.";
          *hp = *hp -damage;
          sep();
-         if(c == 4){
+         if(bleed_chance == 4){
              std:: cout << "The fox scratched you!"<< std:: endl;
              std:: cout << "You are now bleeding!";
          }
@@ -695,9 +710,9 @@ void lvlup(){
 }
 
 void moveinfo(){
-    int info_choice;
+    char info_choice;
     int exit_menu =0;
-    char turn_timer;
+    char menu_stopper;
     while(exit_menu==0){
         info_choice =0;
     sep();
@@ -713,34 +728,34 @@ void moveinfo(){
 
     switch (info_choice)
     {
-    case 1:
+    case '1':
         std::cout<<"Does ok damage and, has a 70"<< "% "<< "chance to hit the target.";
         sep();
         std::cout << "Press any key and enter to continue: ";
-        std::cin >> turn_timer;
+        std::cin >> menu_stopper;
         break;
-    case 2:
+    case '2':
         std::cout << "Does heavy damage and, has a 40" << "% "<< "chance to hit the target.";
         sep();
         std::cout << "Press any key and enter to continue: ";
-        std::cin >> turn_timer;
+        std::cin >> menu_stopper;
         break;
 
-    case 3:
+    case '3':
         std::cout << "Has a 5" << "% "<< " chance to hit the target, but always kills.";
         sep();
         std::cout << "Press any key and enter to continue: ";
-        std::cin >> turn_timer;
+        std::cin >> menu_stopper;
         break;
 
-    case 4:
+    case '4':
         std::cout << "Does heavy damage and, has a 60" << "% "<< " chance to hit the target. Also has a 25"<< "% "<< "chance to burn.";
         sep();
         std::cout << "Press any key and enter to continue: ";
-        std::cin >> turn_timer;
+        std::cin >> menu_stopper;
         break;
 
-    case 5:
+    case '5':
         exit_menu++;
         sep();
         break;
