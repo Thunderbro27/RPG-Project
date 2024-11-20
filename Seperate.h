@@ -1,4 +1,4 @@
 #include <iostream>
-void sep(){
+    void sep(){
     std::cout<< std::endl <<  "-----------------------------" << std::endl;
 };
